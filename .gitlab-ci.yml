@@ -1,0 +1,31 @@
+image: docker:stable
+
+variables:
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  CONTAINER_IMAGE_HASHED: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+
+stages:
+  - build
+  - publish
+
+before_script:
+  - docker info
+  - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+build:
+  tags:
+    - docker
+  stage: build
+  script:
+    - docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_HASHED -t $CI_REGISTRY_IMAGE:latest -f Dockerfile .
+    - docker push $CONTAINER_IMAGE
+    - docker push $CONTAINER_IMAGE_HASHED
+    - docker push $CI_REGISTRY_IMAGE:latest
+
+publish:
+  stage: publish
+  script:
+    - docker pull $CONTAINER_IMAGE_HASHED
+    - docker tag $CONTAINER_IMAGE_HASHED $CONTAINER_IMAGE
+    - docker push $CONTAINER_IMAGE
+
