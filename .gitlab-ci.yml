@@ -1,8 +1,9 @@
 image: docker:stable
 
 variables:
-  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
-  CONTAINER_IMAGE_HASHED: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
+  DBT_RELEASE: v0.17.2
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$DBT_RELEASE-$CI_COMMIT_REF_SLUG
+  CONTAINER_IMAGE_HASHED: $CI_REGISTRY_IMAGE:$DBT_RELEASE-$CI_COMMIT_REF_SLUG-$CI_COMMIT_SHORT_SHA
 
 stages:
   - build
@@ -17,9 +18,10 @@ build:
     - docker
   stage: build
   script:
-    - docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_HASHED -t $CI_REGISTRY_IMAGE:latest -f Dockerfile .
+    - docker build -t $CONTAINER_IMAGE -t $CONTAINER_IMAGE_HASHED -t $CI_REGISTRY_IMAGE:$DBT_RELEASE -t $CI_REGISTRY_IMAGE:latest -f Dockerfile .
     - docker push $CONTAINER_IMAGE
     - docker push $CONTAINER_IMAGE_HASHED
+    - docker push $CI_REGISTRY_IMAGE:$DBT_RELEASE
     - docker push $CI_REGISTRY_IMAGE:latest
 
 publish:

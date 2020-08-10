@@ -7,3 +7,7 @@ Mashup of
 
 Used for <https://gitlab.nexttuesday.de/ns/dbt-trial/pages>
 
+
+## Releasing
+
+To bump the dbt release, modify `requirements.txt` and `.gitlab-ci.yml`
